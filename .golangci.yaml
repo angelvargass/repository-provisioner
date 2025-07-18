@@ -22,7 +22,6 @@ linters:
     - nilerr
     - nilnesserr
     - noctx
-    - perfsprint
     - prealloc
     - protogetter
     - reassign
