@@ -13,7 +13,7 @@ func LoadFilesForArchetype(archetypesDirectory, archetype string) []string {
 	rootPath := archetypesDirectory + archetype
 	files := []string{}
 
-	err := filepath.WalkDir(rootPath, func(path string, d fs.DirEntry, err error) error {
+	err := filepath.WalkDir(rootPath, func(path string, _ fs.DirEntry, err error) error {
 		if err != nil {
 			return err
 		}
