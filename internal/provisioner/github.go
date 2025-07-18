@@ -1,4 +1,4 @@
-package gh
+package provisioner
 
 import (
 	"context"

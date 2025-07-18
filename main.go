@@ -8,8 +8,8 @@ import (
 	"syscall"
 
 	"github.com/angelvargass/repository-provisioner/internal/config"
-	"github.com/angelvargass/repository-provisioner/internal/gh"
 	"github.com/angelvargass/repository-provisioner/internal/logger"
+	gh "github.com/angelvargass/repository-provisioner/internal/provisioner"
 )
 
 func main() {
