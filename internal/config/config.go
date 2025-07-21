@@ -15,7 +15,7 @@ type Github struct {
 	AccessToken         string `envconfig:"GITHUB_ACCESS_TOKEN" required:"true"`
 	RepoName            string `envconfig:"GITHUB_REPO_NAME" required:"true"`
 	RepoOwner           string `envconfig:"GITHUB_OWNER" required:"true"`
-	Archetype           string `envconfig:"GITHUB_ARCHETYPE" required:"true"`
+	Archetype           string `envconfig:"ARCHETYPE" required:"true"`
 	ArchetypesDirectory string `envconfig:"GITHUB_ARCHETYPES_DIRECTORY" default:"internal/archetypes/"`
 }
 
