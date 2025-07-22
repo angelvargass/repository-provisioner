@@ -16,8 +16,8 @@ func HandleError(errorMessage string, err error) {
 
 func GetArchetypeFromTopics(topics []string, archetypeTopicPrefix string) (string, error) {
 	for _, topic := range topics {
-		if strings.HasPrefix(topic, fmt.Sprintf("%s-", archetypeTopicPrefix)) {
-			return strings.TrimPrefix(topic, fmt.Sprintf("%s-", archetypeTopicPrefix)), nil
+		if strings.HasPrefix(topic, archetypeTopicPrefix) {
+			return strings.TrimPrefix(topic, archetypeTopicPrefix), nil
 		}
 	}
 	return "", fmt.Errorf("archetype topic not found in topics: %v", topics)

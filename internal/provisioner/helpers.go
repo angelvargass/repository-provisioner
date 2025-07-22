@@ -3,16 +3,39 @@ package provisioner
 import (
 	"context"
 	"fmt"
+	"slices"
+	"strings"
 
 	"github.com/angelvargass/repository-provisioner/internal/utils"
 )
 
-// getUpdatingFilesSHA fetches the repository content from the default branch, Searches if a file
-// from the archetypeFiles slice exists in the repository. If exists,
-// returns the SHA associated with the repo's file.
-func (p *Provisioner) getUpdatingFileSHA(ctx context.Context, owner, repoName, path string) {
-	fileContent, _, err := p.GHClient.GetRepositoryContent(ctx, owner, repoName, path, "")
-	utils.HandleError("failed to get repository content", err)
+func (p *Provisioner) getArchetypeSubPath(selectedArchetype string) string {
+	archetypeIndex := slices.IndexFunc(archetypesSubPaths, func(archetypeSubPath string) bool {
+		return strings.Contains(archetypeSubPath, selectedArchetype)
+	})
 
-	fmt.Println(fileContent)
+	if archetypeIndex == -1 {
+		utils.HandleError(fmt.Sprintf("archetype %s does not exists", selectedArchetype), fmt.Errorf("archetype not found"))
+	}
+
+	return archetypesSubPaths[archetypeIndex]
+}
+
+// configureGolangArchetypeRepositorySecrets creates or updates the required secrets for the
+// golang archetype on the target repository
+func (p *Provisioner) configureGolangArchetypeRepositorySecrets(ctx context.Context, owner, repoName, releasePleaseToken, goReleaserToken string) error {
+	secrets := map[string]string{
+		"RELEASE_PLEASE_TOKEN": releasePleaseToken,
+		"GORELEASER_TOKEN":     goReleaserToken,
+	}
+
+	for secretName, secretValue := range secrets {
+		err := p.GHClient.CreateOrUpdateRepositorySecret(ctx, owner, repoName, secretName, secretValue)
+		if err != nil {
+			return fmt.Errorf(fmt.Sprintf("error creating or updating repository secret %s", secretName), err)
+		}
+
+		p.Logger.Debug("created or updated repository secret", "secret name", secretName)
+	}
+	return nil
 }

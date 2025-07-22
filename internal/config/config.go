@@ -7,16 +7,19 @@ import (
 )
 
 type Config struct {
-	LogLevel     string `envconfig:"LOG_LEVEL" default:"info"`
+	LogLevel            string `envconfig:"LOG_LEVEL" default:"info"`
+	RepoOwner           string `envconfig:"REPO_OWNER" required:"true"`
+	RepoName            string `envconfig:"REPO_NAME" required:"true"`
+	Archetype           string `envconfig:"ARCHETYPE" required:"true"`
+	ArchetypesDirectory string `envconfig:"ARCHETYPES_DIRECTORY" default:"internal/archetypes/"`
+
 	GithubConfig *Github
 }
 
 type Github struct {
-	AccessToken         string `envconfig:"GITHUB_ACCESS_TOKEN" required:"true"`
-	RepoName            string `envconfig:"GITHUB_REPO_NAME" required:"true"`
-	RepoOwner           string `envconfig:"GITHUB_OWNER" required:"true"`
-	Archetype           string `envconfig:"ARCHETYPE" required:"true"`
-	ArchetypesDirectory string `envconfig:"GITHUB_ARCHETYPES_DIRECTORY" default:"internal/archetypes/"`
+	AccessToken        string `envconfig:"GITHUB_ACCESS_TOKEN" required:"true"`
+	GoReleaserToken    string `envconfig:"GO_RELEASER_TOKEN" required:"true"`
+	ReleasePleaseToken string `envconfig:"RELEASE_PLEASE_TOKEN" required:"true"`
 }
 
 func New() (*Config, error) {

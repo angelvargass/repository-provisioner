@@ -27,7 +27,7 @@ func main() {
 	logger.Info("application started", slog.String("logLevel", cfg.LogLevel))
 
 	gh := gh.New(logger, cfg.GithubConfig.AccessToken)
-	provisioner := provisioner.New(logger, gh)
-	err = provisioner.ProvisionRepository(ctx, cfg.GithubConfig.RepoOwner, cfg.GithubConfig.RepoName, cfg.GithubConfig.ArchetypesDirectory, cfg.GithubConfig.Archetype)
+	provisioner := provisioner.New(logger, gh, cfg.ArchetypesDirectory, cfg.GithubConfig.GoReleaserToken, cfg.GithubConfig.ReleasePleaseToken)
+	provisioner.ProvisionRepository(ctx, cfg.RepoOwner, cfg.RepoName, cfg.Archetype)
 	utils.HandleError("error on repository-provisioner", err)
 }
