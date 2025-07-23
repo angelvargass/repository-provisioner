@@ -1,9 +1,9 @@
 version: 2
 
-project_name: go-api
+project_name: repository-provisioner
 
 builds:
-  - main: ./cmd/
+  - main: ./
     env:
       - CGO_ENABLED=0
     goos:
