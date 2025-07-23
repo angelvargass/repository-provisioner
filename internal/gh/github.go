@@ -179,3 +179,20 @@ func (gh *Github) CreateOrUpdateRepositorySecret(ctx context.Context, owner, rep
 
 	return nil
 }
+
+func (gh *Github) CreatePullRequest(ctx context.Context, owner, repoName, title, body, head, base string) (*github.PullRequest, error) {
+	gh.Logger.Debug("creating pull request", slog.String("repo name", repoName), slog.String("title", title), slog.String("head", head), slog.String("base", base))
+	pr, _, err := gh.Client.PullRequests.Create(ctx, owner, repoName, &github.NewPullRequest{
+		Title: github.Ptr(title),
+		Body:  github.Ptr(body),
+		Head:  github.Ptr(head),
+		Base:  github.Ptr(base),
+	})
+
+	if err != nil {
+		gh.Logger.Debug("error creating pull request", slog.String("repo name", repoName), slog.String("title", title), slog.String("head", head), slog.String("base", base))
+		return nil, err
+	}
+
+	return pr, nil
+}

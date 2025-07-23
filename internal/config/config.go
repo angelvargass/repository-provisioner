@@ -12,6 +12,7 @@ type Config struct {
 	RepoName            string `envconfig:"REPO_NAME" required:"true"`
 	Archetype           string `envconfig:"ARCHETYPE" required:"true"`
 	ArchetypesDirectory string `envconfig:"ARCHETYPES_DIRECTORY" default:"internal/archetypes/"`
+	Reconciling         bool   `envconfig:"RECONCILE" default:"false"`
 
 	GithubConfig *Github
 }

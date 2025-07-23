@@ -11,7 +11,6 @@ import (
 	"github.com/angelvargass/repository-provisioner/internal/gh"
 	"github.com/angelvargass/repository-provisioner/internal/logger"
 	"github.com/angelvargass/repository-provisioner/internal/provisioner"
-	"github.com/angelvargass/repository-provisioner/internal/utils"
 )
 
 func main() {
@@ -24,10 +23,17 @@ func main() {
 		os.Exit(1)
 	}
 	logger := logger.New(cfg.LogLevel)
-	logger.Info("application started", slog.String("logLevel", cfg.LogLevel))
+	logger.Info("repository-provisioner started", slog.String("logLevel", cfg.LogLevel))
 
 	gh := gh.New(logger, cfg.GithubConfig.AccessToken)
 	provisioner := provisioner.New(logger, gh, cfg.ArchetypesDirectory, cfg.GithubConfig.GoReleaserToken, cfg.GithubConfig.ReleasePleaseToken)
+
+	if cfg.Reconciling {
+		logger.Info("reconciling mode enabled, skipping repository provisioning")
+		//implement reonciling logic here
+		return
+	}
+
 	provisioner.ProvisionRepository(ctx, cfg.RepoOwner, cfg.RepoName, cfg.Archetype)
-	utils.HandleError("error on repository-provisioner", err)
+	logger.Info("repository-provisioner ended", slog.String("logLevel", cfg.LogLevel))
 }

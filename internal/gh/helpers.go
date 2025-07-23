@@ -14,6 +14,9 @@ const (
 	nonceSize = 24
 )
 
+// encryptSecret encrypts a secret value using sealed box encryption.
+// It uses the public key of the repository to encrypt the secret.
+// The encrypted value is returned as a base64 encoded string.
 func (gh *Github) encryptSecret(publicKey, text string) (string, error) {
 	// Decode the public key from base64
 	publicKeyBytes, err := base64.StdEncoding.DecodeString(publicKey)
