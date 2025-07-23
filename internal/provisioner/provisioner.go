@@ -17,6 +17,7 @@ const (
 	InitBranchName             = "init"
 	RepositoryProvisionerTopic = "repository-provisioner"
 	ArchetypeTopicPrefix       = "archetype-%s"
+	DefaultRulesetName         = "default-branch-ruleset"
 )
 
 var archetypesSubPaths = []string{"golang/"}
@@ -86,7 +87,9 @@ func (p *Provisioner) ConfigureRepository(ctx context.Context, owner, repoName, 
 	_, err := p.GHClient.ReplaceTopics(ctx, owner, repoName, topics)
 	utils.HandleError(fmt.Sprintf("error replacing topics for repository %s", repoName), err)
 
-	//configure rules for the repository
+	p.Logger.Info("configuring rulesets", slog.String("repo name", repoName))
+	_, err = p.GHClient.CreateRepositoryRuleset(ctx, owner, repoName, DefaultRulesetName)
+	utils.HandleError(fmt.Sprintf("error configuring rulesets for repository %s", repoName), err)
 
 	p.Logger.Info("configuring repository secrets", slog.String("archetype", archetype))
 	switch archetype {

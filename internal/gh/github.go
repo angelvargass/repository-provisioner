@@ -33,7 +33,7 @@ func (gh *Github) GetRepository(ctx context.Context, owner, name string) (*githu
 
 // CreateRepository creates a new repository as specified by the organization/name.
 // If authenticated as user, pass an empty organization string to create the repository under the authenticated user.
-// Repositories created by this function are private by default.
+// Repositories created by this function are public by default (private repositories cannot be created due to rulesets limitations).
 // Default branch name is set to your configuration on Github.
 // Branches are deleted when merged by default.
 // A README.md file is created by default.
@@ -42,7 +42,7 @@ func (gh *Github) CreateRepository(ctx context.Context, organization, name strin
 	gh.Logger.Debug("creating repository", slog.String("organization", organization), slog.String("name", name))
 	repo, res, err := gh.Client.Repositories.Create(ctx, "", &github.Repository{
 		Name:                      github.Ptr(name),
-		Private:                   github.Ptr(true),
+		Private:                   github.Ptr(false),
 		HasIssues:                 github.Ptr(true),
 		HasProjects:               github.Ptr(false),
 		HasWiki:                   github.Ptr(false),
@@ -195,4 +195,47 @@ func (gh *Github) CreatePullRequest(ctx context.Context, owner, repoName, title,
 	}
 
 	return pr, nil
+}
+
+// CreateRepositoryRuleset creates a repository ruleset for the specified repository.
+// Uses the squash merge method, requires code owner review, and requires one approving review.
+// Mandatory status checks are set to require the "conventional-commits-validator" check.
+func (gh *Github) CreateRepositoryRuleset(ctx context.Context, owner, repoName, rulesetName string) (*github.RepositoryRuleset, error) {
+	gh.Logger.Debug("creating repository ruleset", slog.String("repo name", repoName))
+	rules := &github.RepositoryRulesetRules{
+		PullRequest: &github.PullRequestRuleParameters{
+			AllowedMergeMethods:            []github.PullRequestMergeMethod{github.PullRequestMergeMethodSquash},
+			DismissStaleReviewsOnPush:      true,
+			RequireCodeOwnerReview:         true,
+			RequiredApprovingReviewCount:   0,
+			RequiredReviewThreadResolution: true,
+		},
+		RequiredStatusChecks: &github.RequiredStatusChecksRuleParameters{
+			RequiredStatusChecks: []*github.RuleStatusCheck{
+				{
+					Context: "validate-commits",
+				},
+			},
+		},
+	}
+
+	ruleset, _, err := gh.Client.Repositories.CreateRuleset(ctx, owner, repoName, github.RepositoryRuleset{
+		Name:        rulesetName,
+		Target:      github.Ptr(github.RulesetTargetBranch),
+		Enforcement: github.RulesetEnforcementActive,
+		Conditions: &github.RepositoryRulesetConditions{
+			RefName: &github.RepositoryRulesetRefConditionParameters{
+				Include: []string{"~DEFAULT_BRANCH"},
+				Exclude: []string{},
+			},
+		},
+		Rules: rules,
+	})
+
+	if err != nil {
+		gh.Logger.Debug("error creating repository ruleset", slog.String("repo name", repoName))
+		return nil, err
+	}
+
+	return ruleset, nil
 }
