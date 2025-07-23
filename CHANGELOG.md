@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.1.0](https://github.com/angelvargass/repository-provisioner/compare/v1.0.1...v1.1.0) (2025-07-23)
+
+
+### Features
+
+* rulesets ([#6](https://github.com/angelvargass/repository-provisioner/issues/6)) ([cbfc12d](https://github.com/angelvargass/repository-provisioner/commit/cbfc12d2d5eed0d5a55b21ded6f7850e100d0cc6))
+
 ## [1.0.1](https://github.com/angelvargass/repository-provisioner/compare/v1.0.0...v1.0.1) (2025-07-23)
 
 
