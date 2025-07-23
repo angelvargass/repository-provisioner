@@ -1,25 +1,6 @@
 name: goreleaser-and-deploy
 
 on:
-  workflow_dispatch:
-    inputs:
-      trigger-goreleaser:
-        description: 'Trigger GoReleaser build'
-        required: true
-        type: boolean
-        default: true
-      
-      trigger-docker-build-scan-release:
-        description: 'Trigger Docker build, scan, and release'
-        required: true
-        type: boolean
-        default: true
-
-      with-tag-version:
-        description: 'Tag to use for the release'
-        required: false
-        type: string
-        default: ''
   push:
     tags:
       - '*'
@@ -30,7 +11,6 @@ permissions:
 
 jobs:
   goreleaser:
-    if: inputs.trigger-goreleaser || github.event_name == 'push' && contains(github.ref, 'refs/tags/')
     runs-on: ubuntu-latest
     steps:
       -
