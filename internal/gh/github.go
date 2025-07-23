@@ -207,11 +207,15 @@ func (gh *Github) CreateRepositoryRuleset(ctx context.Context, owner, repoName, 
 			AllowedMergeMethods:            []github.PullRequestMergeMethod{github.PullRequestMergeMethodSquash},
 			DismissStaleReviewsOnPush:      true,
 			RequireCodeOwnerReview:         true,
-			RequiredApprovingReviewCount:   1,
+			RequiredApprovingReviewCount:   0,
 			RequiredReviewThreadResolution: true,
 		},
 		RequiredStatusChecks: &github.RequiredStatusChecksRuleParameters{
-			RequiredStatusChecks: []*github.RuleStatusCheck{&github.RuleStatusCheck{Context: "validate-commits"}},
+			RequiredStatusChecks: []*github.RuleStatusCheck{
+				{
+					Context: "validate-commits",
+				},
+			},
 		},
 	}
 
