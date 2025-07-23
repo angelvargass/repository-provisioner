@@ -3,7 +3,7 @@ name: conventional-commits-validator
 on:
   pull_request:
     types: [opened, edited, synchronize]
-    branches: [ master ]
+    branches: [ main ]
 
 jobs:
   validate-commits:
