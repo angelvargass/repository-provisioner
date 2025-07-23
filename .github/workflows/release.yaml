@@ -1,0 +1,54 @@
+name: goreleaser-and-deploy
+
+on:
+  workflow_dispatch:
+    inputs:
+      trigger-goreleaser:
+        description: 'Trigger GoReleaser build'
+        required: true
+        type: boolean
+        default: true
+      
+      trigger-docker-build-scan-release:
+        description: 'Trigger Docker build, scan, and release'
+        required: true
+        type: boolean
+        default: true
+
+      with-tag-version:
+        description: 'Tag to use for the release'
+        required: false
+        type: string
+        default: ''
+  push:
+    tags:
+      - '*'
+
+permissions:
+  contents: write
+  packages: write
+
+jobs:
+  goreleaser:
+    if: inputs.trigger-goreleaser || github.event_name == 'push' && contains(github.ref, 'refs/tags/')
+    runs-on: ubuntu-latest
+    steps:
+      -
+        name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      -
+        name: Set up Go
+        uses: actions/setup-go@v5
+        with:
+            go-version: 1.24
+      -
+        name: Run GoReleaser
+        uses: goreleaser/goreleaser-action@v6
+        with:
+          distribution: goreleaser
+          version: '~> v2'
+          args: release --clean
+        env:
+          GITHUB_TOKEN: ${{ secrets.GORELEASER_GITHUB_TOKEN }}
