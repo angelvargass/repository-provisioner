@@ -1,5 +1,13 @@
 # Changelog
 
+## [1.0.1](https://github.com/angelvargass/repository-provisioner/compare/v1.0.0...v1.0.1) (2025-07-23)
+
+
+### Bug Fixes
+
+* archetype ci ([72024d8](https://github.com/angelvargass/repository-provisioner/commit/72024d85c94fe2bb681631d2646c597bcb399321))
+* archetype ci ([97cef6b](https://github.com/angelvargass/repository-provisioner/commit/97cef6bc82eb762823415fb32e15e63f9e3c7494))
+
 ## 1.0.0 (2025-07-23)
 
 
