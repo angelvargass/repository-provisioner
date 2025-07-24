@@ -58,8 +58,9 @@ func (p *Provisioner) ProvisionRepository(ctx context.Context, owner, repoName, 
 		if strings.Contains(file, GoTemplateExtension) {
 			parsedFileName = strings.TrimSuffix(file, GoTemplateExtension)
 			contents = filesystem.LoadTemplateFile(archetypeFilePath, map[string]any{
-				"RepositoryName": repoName,
-				"DefaultBranch":  "main",
+				"RepositoryOwner": owner,
+				"RepositoryName":  repoName,
+				"DefaultBranch":   "main",
 			})
 		}
 
