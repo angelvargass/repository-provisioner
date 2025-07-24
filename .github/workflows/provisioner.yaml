@@ -35,7 +35,7 @@ jobs:
             REPO_OWNER: 'angelvargass'
             REPO_NAME: 'test2'
             ARCHETYPE: 'golang'
-            GITHUB_ACCESS_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+            GITHUB_ACCESS_TOKEN: ${{ secrets.GH_PAT }}
             GO_RELEASER_TOKEN: ${{ secrets.GORELEASER_GITHUB_TOKEN }}
             RELEASE_PLEASE_TOKEN: ${{ secrets.MY_RELEASE_PLEASE_TOKEN }}
         run: go run main.go
