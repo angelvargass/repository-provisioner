@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.1.1](https://github.com/angelvargass/repository-provisioner/compare/v1.1.0...v1.1.1) (2025-07-24)
+
+
+### Bug Fixes
+
+* goreleaser template, create ruleset function and added GHA for repo provisioner ([#8](https://github.com/angelvargass/repository-provisioner/issues/8)) ([59ea5c8](https://github.com/angelvargass/repository-provisioner/commit/59ea5c8d8c0922e536cef7ceeaea499391881e79))
+
 ## [1.1.0](https://github.com/angelvargass/repository-provisioner/compare/v1.0.1...v1.1.0) (2025-07-23)
 
 
