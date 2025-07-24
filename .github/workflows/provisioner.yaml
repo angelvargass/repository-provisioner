@@ -4,7 +4,7 @@ on:
     push:
         branches:
         - gha
-        
+
     workflow_dispatch:
         inputs:
             repository-name:
@@ -33,8 +33,8 @@ jobs:
       - name: Run provisioner
         env:
             REPO_OWNER: 'angelvargass'
-            REPO_NAME: ${{ inputs.repository-name }}
-            ARCHETYPE: ${{ inputs.archetype }}
+            REPO_NAME: 'test2'
+            ARCHETYPE: 'golang'
             GITHUB_ACCESS_TOKEN: ${{ secrets.GITHUB_TOKEN }}
             GO_RELEASER_TOKEN: ${{ secrets.GORELEASER_GITHUB_TOKEN }}
             RELEASE_PLEASE_TOKEN: ${{ secrets.MY_RELEASE_PLEASE_TOKEN }}
