@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.1.2](https://github.com/angelvargass/repository-provisioner/compare/v1.1.1...v1.1.2) (2025-07-24)
+
+
+### Bug Fixes
+
+* go mod from golang archetype ([#10](https://github.com/angelvargass/repository-provisioner/issues/10)) ([5dcd2ec](https://github.com/angelvargass/repository-provisioner/commit/5dcd2ecb1318c8f1f88c0334980d7329ac084e11))
+
 ## [1.1.1](https://github.com/angelvargass/repository-provisioner/compare/v1.1.0...v1.1.1) (2025-07-24)
 
 
