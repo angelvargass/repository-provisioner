@@ -10,6 +10,7 @@ import (
 	"github.com/angelvargass/repository-provisioner/internal/filesystem"
 	"github.com/angelvargass/repository-provisioner/internal/gh"
 	"github.com/angelvargass/repository-provisioner/internal/utils"
+	"github.com/google/go-github/v73/github"
 )
 
 const (
@@ -84,11 +85,28 @@ func (p *Provisioner) ProvisionRepository(ctx context.Context, owner, repoName, 
 func (p *Provisioner) ConfigureRepository(ctx context.Context, owner, repoName, archetype string) {
 	p.Logger.Info("replacing topics for repo", slog.String("repo name", repoName), slog.String("archetype", archetype))
 	topics := []string{RepositoryProvisionerTopic, fmt.Sprintf(ArchetypeTopicPrefix, archetype), repoName}
+
+	rules := &github.RepositoryRulesetRules{
+		PullRequest: &github.PullRequestRuleParameters{
+			AllowedMergeMethods:            []github.PullRequestMergeMethod{github.PullRequestMergeMethodSquash},
+			DismissStaleReviewsOnPush:      true,
+			RequireCodeOwnerReview:         true,
+			RequiredApprovingReviewCount:   0,
+			RequiredReviewThreadResolution: true,
+		},
+		RequiredStatusChecks: &github.RequiredStatusChecksRuleParameters{
+			RequiredStatusChecks: []*github.RuleStatusCheck{
+				{
+					Context: "validate-commits",
+				},
+			},
+		},
+	}
 	_, err := p.GHClient.ReplaceTopics(ctx, owner, repoName, topics)
 	utils.HandleError(fmt.Sprintf("error replacing topics for repository %s", repoName), err)
 
 	p.Logger.Info("configuring rulesets", slog.String("repo name", repoName))
-	_, err = p.GHClient.CreateRepositoryRuleset(ctx, owner, repoName, DefaultRulesetName)
+	_, err = p.GHClient.CreateRepositoryRuleset(ctx, owner, repoName, DefaultRulesetName, rules)
 	utils.HandleError(fmt.Sprintf("error configuring rulesets for repository %s", repoName), err)
 
 	p.Logger.Info("configuring repository secrets", slog.String("archetype", archetype))

@@ -198,26 +198,9 @@ func (gh *Github) CreatePullRequest(ctx context.Context, owner, repoName, title,
 }
 
 // CreateRepositoryRuleset creates a repository ruleset for the specified repository.
-// Uses the squash merge method, requires code owner review, and requires one approving review.
-// Mandatory status checks are set to require the "conventional-commits-validator" check.
-func (gh *Github) CreateRepositoryRuleset(ctx context.Context, owner, repoName, rulesetName string) (*github.RepositoryRuleset, error) {
+// The provided rule is applied to the default branch of the repository.
+func (gh *Github) CreateRepositoryRuleset(ctx context.Context, owner, repoName, rulesetName string, rules *github.RepositoryRulesetRules) (*github.RepositoryRuleset, error) {
 	gh.Logger.Debug("creating repository ruleset", slog.String("repo name", repoName))
-	rules := &github.RepositoryRulesetRules{
-		PullRequest: &github.PullRequestRuleParameters{
-			AllowedMergeMethods:            []github.PullRequestMergeMethod{github.PullRequestMergeMethodSquash},
-			DismissStaleReviewsOnPush:      true,
-			RequireCodeOwnerReview:         true,
-			RequiredApprovingReviewCount:   0,
-			RequiredReviewThreadResolution: true,
-		},
-		RequiredStatusChecks: &github.RequiredStatusChecksRuleParameters{
-			RequiredStatusChecks: []*github.RuleStatusCheck{
-				{
-					Context: "validate-commits",
-				},
-			},
-		},
-	}
 
 	ruleset, _, err := gh.Client.Repositories.CreateRuleset(ctx, owner, repoName, github.RepositoryRuleset{
 		Name:        rulesetName,
