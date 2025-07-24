@@ -1,0 +1,41 @@
+name: repository-provisioner
+
+on:
+    push:
+        branches:
+        - gha
+        
+    workflow_dispatch:
+        inputs:
+            repository-name:
+              description: 'Name of the repository to provision'
+              required: true
+              type: string
+            
+            archetype:
+              type: choice
+              description: Archetype to use for the repository
+              options:
+              - golang
+
+jobs:
+  repository-provisioner:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Go
+        uses: actions/setup-go@v5
+        with:
+            go-version: '1.24'
+
+      - name: Run provisioner
+        env:
+            REPO_OWNER: 'angelvargass'
+            REPO_NAME: ${{ inputs.repository-name }}
+            ARCHETYPE: ${{ inputs.archetype }}
+            GITHUB_ACCESS_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+            GO_RELEASER_TOKEN: ${{ secrets.GORELEASER_GITHUB_TOKEN }}
+            RELEASE_PLEASE_TOKEN: ${{ secrets.MY_RELEASE_PLEASE_TOKEN }}
+        run: go run main.go
