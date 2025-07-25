@@ -3,7 +3,7 @@ package provisioner
 import (
 	"log/slog"
 
-	"github.com/angelvargass/repository-provisioner/internal/gh"
+	"github.com/angelvargass/go-common/gh"
 )
 
 type Provisioner struct {

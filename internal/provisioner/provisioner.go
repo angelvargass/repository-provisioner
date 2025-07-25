@@ -7,8 +7,8 @@ import (
 	"os"
 	"strings"
 
+	"github.com/angelvargass/go-common/gh"
 	"github.com/angelvargass/repository-provisioner/internal/filesystem"
-	"github.com/angelvargass/repository-provisioner/internal/gh"
 	"github.com/angelvargass/repository-provisioner/internal/utils"
 	"github.com/google/go-github/v73/github"
 )
