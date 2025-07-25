@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.2.0](https://github.com/angelvargass/repository-provisioner/compare/v1.1.2...v1.2.0) (2025-07-25)
+
+
+### Features
+
+* replace gh package to go-common module ([#12](https://github.com/angelvargass/repository-provisioner/issues/12)) ([6f5ffa4](https://github.com/angelvargass/repository-provisioner/commit/6f5ffa49d7fd521fd3d180ccbf257950f5de7b24))
+
 ## [1.1.2](https://github.com/angelvargass/repository-provisioner/compare/v1.1.1...v1.1.2) (2025-07-24)
 
 
