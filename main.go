@@ -7,8 +7,8 @@ import (
 	"os/signal"
 	"syscall"
 
+	"github.com/angelvargass/go-common/gh"
 	"github.com/angelvargass/repository-provisioner/internal/config"
-	"github.com/angelvargass/repository-provisioner/internal/gh"
 	"github.com/angelvargass/repository-provisioner/internal/logger"
 	"github.com/angelvargass/repository-provisioner/internal/provisioner"
 )
