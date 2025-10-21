@@ -26,14 +26,20 @@ func main() {
 	logger.Info("repository-provisioner started", slog.String("logLevel", cfg.LogLevel))
 
 	gh := gh.New(logger, cfg.GithubConfig.AccessToken)
-	provisioner := provisioner.New(logger, gh, cfg.ArchetypesDirectory, cfg.GithubConfig.GoReleaserToken, cfg.GithubConfig.ReleasePleaseToken)
+	provisioner := provisioner.New(logger, gh, cfg.ArchetypesDirectory, cfg.DevelopmentFilesPath, cfg.GithubConfig.GoReleaserToken, cfg.GithubConfig.ReleasePleaseToken, cfg.Reconciling)
 
-	if cfg.Reconciling {
-		logger.Info("reconciling mode enabled, skipping repository provisioning")
-		//implement reonciling logic here
+	if cfg.Development {
+		logger.Info("development mode enabled, creating archetype at root program path")
+		provisioner.CreateArchetypeLocally(cfg.RepoOwner, cfg.RepoName, cfg.Archetype)
 		return
 	}
 
-	provisioner.ProvisionRepository(ctx, cfg.RepoOwner, cfg.RepoName, cfg.Archetype)
+	if cfg.Reconciling {
+		logger.Info("repository-provisioner running on reconcile mode")
+		provisioner.Reconcile(ctx, cfg.RepoOwner)
+		return
+	}
+
+	provisioner.ProvisionOrReconcileRepository(ctx, cfg.RepoOwner, cfg.RepoName, cfg.Archetype)
 	logger.Info("repository-provisioner ended", slog.String("logLevel", cfg.LogLevel))
 }

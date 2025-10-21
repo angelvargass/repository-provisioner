@@ -1,18 +1,7 @@
-name: repository-provisioner
+name: repository-provisioner-reconciler
 
 on:
     workflow_dispatch:
-        inputs:
-            repository-name:
-              description: 'Name of the repository to provision'
-              required: true
-              type: string
-            
-            archetype:
-              type: choice
-              description: Archetype to use for the repository
-              options:
-              - golang
 
 jobs:
   repository-provisioner:
@@ -29,9 +18,10 @@ jobs:
       - name: Run provisioner
         env:
             REPO_OWNER: 'angelvargass'
-            REPO_NAME: ${{ inputs.repository-name }}
-            ARCHETYPE: ${{ inputs.archetype }}
+            REPO_NAME: 'reconcile'
+            ARCHETYPE: 'reconcile'
             GITHUB_ACCESS_TOKEN: ${{ secrets.GH_PAT }}
             GO_RELEASER_TOKEN: ${{ secrets.GORELEASER_GITHUB_TOKEN }}
             RELEASE_PLEASE_TOKEN: ${{ secrets.MY_RELEASE_PLEASE_TOKEN }}
+            RECONCILE: 'true'
         run: go run main.go

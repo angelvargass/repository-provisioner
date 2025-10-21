@@ -7,12 +7,14 @@ import (
 )
 
 type Config struct {
-	LogLevel            string `envconfig:"LOG_LEVEL" default:"info"`
-	RepoOwner           string `envconfig:"REPO_OWNER" required:"true"`
-	RepoName            string `envconfig:"REPO_NAME" required:"true"`
-	Archetype           string `envconfig:"ARCHETYPE" required:"true"`
-	ArchetypesDirectory string `envconfig:"ARCHETYPES_DIRECTORY" default:"internal/archetypes/"`
-	Reconciling         bool   `envconfig:"RECONCILE" default:"false"`
+	LogLevel             string `envconfig:"LOG_LEVEL" default:"info"`
+	RepoOwner            string `envconfig:"REPO_OWNER" required:"true"`
+	RepoName             string `envconfig:"REPO_NAME" required:"true"`
+	Archetype            string `envconfig:"ARCHETYPE" required:"true"`
+	ArchetypesDirectory  string `envconfig:"ARCHETYPES_DIRECTORY" default:"internal/archetypes/"`
+	Reconciling          bool   `envconfig:"RECONCILE" default:"false"`
+	Development          bool   `envconfig:"DEVELOPMENT" default:"false"`
+	DevelopmentFilesPath string `envconfig:"DEVELOPMENT_FILES_PATH" default:"development-files/"`
 
 	GithubConfig *Github
 }

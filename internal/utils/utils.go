@@ -1,10 +1,10 @@
-package utils
+package utils //nolint
 
 import (
-	"fmt"
+	"crypto/rand"
 	"log/slog"
+	"math/big"
 	"os"
-	"strings"
 )
 
 func HandleError(errorMessage string, err error) {
@@ -14,11 +14,11 @@ func HandleError(errorMessage string, err error) {
 	}
 }
 
-func GetArchetypeFromTopics(topics []string, archetypeTopicPrefix string) (string, error) {
-	for _, topic := range topics {
-		if strings.HasPrefix(topic, archetypeTopicPrefix) {
-			return strings.TrimPrefix(topic, archetypeTopicPrefix), nil
-		}
+func GenerateRandomInteger() (int64, error) {
+	maxNum := big.NewInt(100)
+	nBig, err := rand.Int(rand.Reader, maxNum)
+	if err != nil {
+		return 0, err
 	}
-	return "", fmt.Errorf("archetype topic not found in topics: %v", topics)
+	return nBig.Int64(), nil
 }

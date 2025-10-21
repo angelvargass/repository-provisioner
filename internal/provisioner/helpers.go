@@ -3,22 +3,28 @@ package provisioner
 import (
 	"context"
 	"fmt"
-	"slices"
 	"strings"
-
-	"github.com/angelvargass/repository-provisioner/internal/utils"
 )
 
-func (p *Provisioner) getArchetypeSubPath(selectedArchetype string) string {
-	archetypeIndex := slices.IndexFunc(archetypesSubPaths, func(archetypeSubPath string) bool {
-		return strings.Contains(archetypeSubPath, selectedArchetype)
-	})
+func (p *Provisioner) getArchetypeFromTopics(topics []string, archetypeTopicPrefix string) (string, error) {
+	for _, topic := range topics {
+		if strings.HasPrefix(topic, archetypeTopicPrefix) {
+			return strings.TrimPrefix(topic, archetypeTopicPrefix), nil
+		}
+	}
+	return "", fmt.Errorf("archetype topic not found in topics: %v", topics)
+}
 
-	if archetypeIndex == -1 {
-		utils.HandleError(fmt.Sprintf("archetype %s does not exists", selectedArchetype), fmt.Errorf("archetype not found"))
+// getArchetypeSubPath returns the key from the archetypeSubPaths map that contains the selectedArchetype.
+// If it is not found, returns an error.
+func (p *Provisioner) getArchetypeSubPath(selectedArchetype string) (string, error) {
+	for k := range archetypeSubPaths {
+		if strings.Contains(k, selectedArchetype) {
+			return k, nil
+		}
 	}
 
-	return archetypesSubPaths[archetypeIndex]
+	return "", fmt.Errorf("archetype not found")
 }
 
 // configureGolangArchetypeRepositorySecrets creates or updates the required secrets for the
