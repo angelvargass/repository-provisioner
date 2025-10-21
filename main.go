@@ -34,6 +34,12 @@ func main() {
 		return
 	}
 
+	if cfg.Reconciling {
+		logger.Info("repository-provisioner running on reconcile mode")
+		provisioner.Reconcile(ctx, cfg.RepoOwner)
+		return
+	}
+
 	provisioner.ProvisionOrReconcileRepository(ctx, cfg.RepoOwner, cfg.RepoName, cfg.Archetype)
 	logger.Info("repository-provisioner ended", slog.String("logLevel", cfg.LogLevel))
 }

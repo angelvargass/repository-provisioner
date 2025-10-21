@@ -44,6 +44,22 @@ func New(logger *slog.Logger, ghClient *gh.Github, archetypesDirectory, developm
 	}
 }
 
+// Reconcile reconciles all the repositories that have the repository-provisioner topic on them.
+func (p *Provisioner) Reconcile(ctx context.Context, owner string) {
+	query := fmt.Sprintf("topic:%s", RepositoryProvisionerTopic)
+
+	//Default returned repositories per page is 30. Refactor this to include more once this limit is reached.
+	result, _, err := p.GHClient.Client.Search.Repositories(ctx, query, &github.SearchOptions{})
+	utils.HandleError(fmt.Sprintf("error querying repositories, query: %s", query), err)
+
+	for _, repo := range result.Repositories {
+		p.Logger.Info(fmt.Sprintf("reconciling repository: %s", *repo.Name))
+		usedArchetype, err := p.getArchetypeFromTopics(repo.Topics, "archetype-")
+		utils.HandleError(fmt.Sprintf("error retrieving archetype for repo: %s", *repo.Name), err)
+		p.ProvisionOrReconcileRepository(ctx, owner, *repo.Name, usedArchetype)
+	}
+}
+
 // ProvisionOrReconcileRepository creates or reconciles a given repository.
 func (p *Provisioner) ProvisionOrReconcileRepository(ctx context.Context, owner, repoName, archetype string) {
 	p.Logger.Info("provisioning repository", slog.String("owner", owner), slog.String("repoName", repoName))
@@ -71,14 +87,14 @@ func (p *Provisioner) ProvisionOrReconcileRepository(ctx context.Context, owner,
 	})
 	utils.HandleError("failed to load archetype files", err)
 	for _, file := range archetypeFiles {
-		if p.Config.Reconciling && slices.Contains(archetypeSubPaths[archetypeSubPath], file.Name) {
+		fileContent, _, err := p.GHClient.GetRepositoryContent(ctx, owner, repoName, file.Name, "")
+		utils.HandleError(fmt.Sprintf("failed to fetch content for file %s", file.Name), err)
+
+		if p.Config.Reconciling && slices.Contains(archetypeSubPaths[archetypeSubPath], file.Name) && fileContent != nil {
 			continue
 		}
 
 		replacingFileSHA := ""
-		fileContent, _, err := p.GHClient.GetRepositoryContent(ctx, owner, repoName, file.Name, "")
-		utils.HandleError(fmt.Sprintf("failed to fetch content for file %s", file.Name), err)
-
 		if fileContent != nil {
 			replacingFileSHA = *fileContent.SHA
 		}

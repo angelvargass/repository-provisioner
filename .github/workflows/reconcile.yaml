@@ -1,0 +1,27 @@
+name: repository-provisioner-reconciler
+
+on:
+    workflow_dispatch:
+
+jobs:
+  repository-provisioner:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v5
+
+      - name: Setup Go
+        uses: actions/setup-go@v6
+        with:
+            go-version: '1.25'
+
+      - name: Run provisioner
+        env:
+            REPO_OWNER: 'angelvargass'
+            REPO_NAME: 'reconcile'
+            ARCHETYPE: 'reconcile'
+            GITHUB_ACCESS_TOKEN: ${{ secrets.GH_PAT }}
+            GO_RELEASER_TOKEN: ${{ secrets.GORELEASER_GITHUB_TOKEN }}
+            RELEASE_PLEASE_TOKEN: ${{ secrets.MY_RELEASE_PLEASE_TOKEN }}
+            RECONCILE: 'true'
+        run: go run main.go

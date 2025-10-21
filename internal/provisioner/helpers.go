@@ -6,6 +6,15 @@ import (
 	"strings"
 )
 
+func (p *Provisioner) getArchetypeFromTopics(topics []string, archetypeTopicPrefix string) (string, error) {
+	for _, topic := range topics {
+		if strings.HasPrefix(topic, archetypeTopicPrefix) {
+			return strings.TrimPrefix(topic, archetypeTopicPrefix), nil
+		}
+	}
+	return "", fmt.Errorf("archetype topic not found in topics: %v", topics)
+}
+
 // getArchetypeSubPath returns the key from the archetypeSubPaths map that contains the selectedArchetype.
 // If it is not found, returns an error.
 func (p *Provisioner) getArchetypeSubPath(selectedArchetype string) (string, error) {
