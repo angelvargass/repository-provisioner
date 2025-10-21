@@ -1,6 +1,6 @@
 module github.com/angelvargass/repository-provisioner
 
-go 1.24.1
+go 1.25.1
 
 require (
 	github.com/angelvargass/go-common v1.0.0
