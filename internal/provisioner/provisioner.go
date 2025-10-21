@@ -4,11 +4,9 @@ import (
 	"context"
 	"fmt"
 	"log/slog"
-	"os"
-	"strings"
 
 	"github.com/angelvargass/go-common/gh"
-	"github.com/angelvargass/repository-provisioner/internal/filesystem"
+	"github.com/angelvargass/repository-provisioner/internal/templateengine"
 	"github.com/angelvargass/repository-provisioner/internal/utils"
 	"github.com/google/go-github/v73/github"
 )
@@ -19,6 +17,7 @@ const (
 	RepositoryProvisionerTopic = "repository-provisioner"
 	ArchetypeTopicPrefix       = "archetype-%s"
 	DefaultRulesetName         = "default-branch-ruleset"
+	DefaultBranch              = "main"
 )
 
 var archetypesSubPaths = []string{"golang/"}
@@ -46,33 +45,23 @@ func (p *Provisioner) ProvisionRepository(ctx context.Context, owner, repoName, 
 	ref, err := p.GHClient.CreateBranch(ctx, owner, repoName, InitBranchName)
 	utils.HandleError("failed to create initial branch", err)
 
-	archetypeFiles := filesystem.LoadFilesForArchetype(p.Config.ArchetypesDirectory, archetypeSubPath)
-	p.Logger.Info("committing archetype to created branch")
+	archetypeFiles, err := templateengine.RenderTemplates(p.Config.ArchetypesDirectory, archetypeSubPath, map[string]any{
+		"RepositoryOwner": owner,
+		"RepositoryName":  repoName,
+		"DefaultBranch":   DefaultBranch,
+	})
+	utils.HandleError("failed to load archetype files", err)
 	for _, file := range archetypeFiles {
-		parsedFileName := file
 		replacingFileSHA := ""
-		archetypeFilePath := p.Config.ArchetypesDirectory + archetypeSubPath + file
-		contents, err := os.ReadFile(archetypeFilePath)
-		utils.HandleError("failed to load file contents", err)
-
-		if strings.Contains(file, GoTemplateExtension) {
-			parsedFileName = strings.TrimSuffix(file, GoTemplateExtension)
-			contents = filesystem.LoadTemplateFile(archetypeFilePath, map[string]any{
-				"RepositoryOwner": owner,
-				"RepositoryName":  repoName,
-				"DefaultBranch":   "main",
-			})
-		}
-
-		fileContent, _, err := p.GHClient.GetRepositoryContent(ctx, owner, repoName, parsedFileName, "")
-		utils.HandleError(fmt.Sprintf("failed to fetch content for file %s", parsedFileName), err)
+		fileContent, _, err := p.GHClient.GetRepositoryContent(ctx, owner, repoName, file.Name, "")
+		utils.HandleError(fmt.Sprintf("failed to fetch content for file %s", file.Name), err)
 
 		if fileContent != nil {
 			replacingFileSHA = *fileContent.SHA
 		}
 
-		p.Logger.Debug("commiting file", slog.String("branch name", *ref.Ref), slog.String("file path", file))
-		_, err = p.GHClient.CreateOrUpdateFile(ctx, owner, repoName, *ref.Ref, fmt.Sprintf("chore: add %s file", parsedFileName), parsedFileName, replacingFileSHA, contents)
+		p.Logger.Debug("commiting file", slog.String("branch name", *ref.Ref), slog.String("file path", file.Name))
+		_, err = p.GHClient.CreateOrUpdateFile(ctx, owner, repoName, *ref.Ref, fmt.Sprintf("chore: add %s file", file.Name), file.Name, replacingFileSHA, file.Content)
 		utils.HandleError("error commiting file", err)
 	}
 
