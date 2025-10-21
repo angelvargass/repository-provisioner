@@ -1,5 +1,17 @@
 # Changelog
 
+## [1.3.0](https://github.com/angelvargass/repository-provisioner/compare/v1.2.0...v1.3.0) (2025-10-21)
+
+
+### Features
+
+* support for reconciling and creating archetype files on a local development setup ([#20](https://github.com/angelvargass/repository-provisioner/issues/20)) ([a270756](https://github.com/angelvargass/repository-provisioner/commit/a270756a800d7c496c6e5b834f803422a18f9ae1))
+
+
+### Bug Fixes
+
+* bump golang.org/x/crypto from 0.40.0 to 0.43.0 ([#18](https://github.com/angelvargass/repository-provisioner/issues/18)) ([be25292](https://github.com/angelvargass/repository-provisioner/commit/be25292d6037d2fdc2b2104492c08ea6a9c490d3))
+
 ## [1.2.0](https://github.com/angelvargass/repository-provisioner/compare/v1.1.2...v1.2.0) (2025-07-25)
 
 
