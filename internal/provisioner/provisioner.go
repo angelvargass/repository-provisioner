@@ -4,6 +4,8 @@ import (
 	"context"
 	"fmt"
 	"log/slog"
+	"os"
+	"path/filepath"
 
 	"github.com/angelvargass/go-common/gh"
 	"github.com/angelvargass/repository-provisioner/internal/templateengine"
@@ -22,14 +24,15 @@ const (
 
 var archetypesSubPaths = []string{"golang/"}
 
-func New(logger *slog.Logger, ghClient *gh.Github, archetypesDirectory, goReleaserToken, releasePleaseToken string) *Provisioner {
+func New(logger *slog.Logger, ghClient *gh.Github, archetypesDirectory, developmentFilesPath, goReleaserToken, releasePleaseToken string) *Provisioner {
 	return &Provisioner{
 		Logger:   logger.With(slog.String("internal", "provisioner")),
 		GHClient: *ghClient,
 		Config: &Config{
-			ArchetypesDirectory: archetypesDirectory,
-			GoReleaserToken:     goReleaserToken,
-			ReleasePleaseToken:  releasePleaseToken,
+			ArchetypesDirectory:  archetypesDirectory,
+			DevelopmentFilesPath: developmentFilesPath,
+			GoReleaserToken:      goReleaserToken,
+			ReleasePleaseToken:   releasePleaseToken,
 		},
 	}
 }
@@ -117,4 +120,34 @@ func (p *Provisioner) OpenInitialPR(ctx context.Context, owner, repoName, archet
 
 	_, err = p.GHClient.CreatePullRequest(ctx, owner, repoName, title, bodyContent, InitBranchName, *repo.DefaultBranch)
 	utils.HandleError(fmt.Sprintf("error creating initial PR for repo %s", repoName), err)
+}
+
+// CreateArchetypeLocally is used when the DEVELOPMENT environment variable = true, it creates the files for the specified
+// archetype at the root path of the main.go program
+func (p *Provisioner) CreateArchetypeLocally(owner, repoName, archetype string) {
+	archetypeSubPath := p.getArchetypeSubPath(archetype)
+
+	files, _ := templateengine.RenderTemplates(p.Config.ArchetypesDirectory, archetypeSubPath, map[string]any{
+		"RepositoryOwner": owner,
+		"RepositoryName":  repoName,
+		"DefaultBranch":   DefaultBranch,
+	})
+
+	err := os.RemoveAll(p.Config.DevelopmentFilesPath)
+	utils.HandleError("error cleaning up development files path", err)
+
+	if err := os.MkdirAll(p.Config.DevelopmentFilesPath, 0755); err != nil {
+		utils.HandleError(fmt.Sprintf("failed to create development files dir: %s", p.Config.DevelopmentFilesPath), err)
+	}
+
+	for _, file := range files {
+		targetPath := filepath.Join(p.Config.DevelopmentFilesPath, file.Name)
+		if err := os.MkdirAll(filepath.Dir(targetPath), 0755); err != nil {
+			utils.HandleError(fmt.Sprintf("failed to create parent dirs for %s", targetPath), err)
+		}
+
+		if err := os.WriteFile(targetPath, file.Content, 0600); err != nil {
+			utils.HandleError(fmt.Sprintf("failed to create file for %s", targetPath), err)
+		}
+	}
 }

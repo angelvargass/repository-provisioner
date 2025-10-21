@@ -13,7 +13,8 @@ type Provisioner struct {
 }
 
 type Config struct {
-	ArchetypesDirectory string
-	GoReleaserToken     string
-	ReleasePleaseToken  string
+	ArchetypesDirectory  string
+	DevelopmentFilesPath string
+	GoReleaserToken      string
+	ReleasePleaseToken   string
 }
